@@ -1,0 +1,136 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Invoice Handler API",
+        "description": "Invoice Swagger API",
+        "version": "0.1"
+    },
+    "paths": {
+        "/api/invoices/store": {
+            "post": {
+                "tags": [
+                    "Invoices"
+                ],
+                "summary": "Create a new invoice",
+                "operationId": "cf6c53e8552e92e08b7cde570b592070",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "Invoice Status": {
+                                        "description": "Status of the Invoice",
+                                        "type": "string",
+                                        "default": "draft",
+                                        "enum": [
+                                            "draft",
+                                            "sending",
+                                            "sent-to-client"
+                                        ],
+                                        "example": "draft"
+                                    },
+                                    "Customer Name": {
+                                        "description": "Customer Name",
+                                        "type": "string",
+                                        "example": "Customer Name"
+                                    },
+                                    "Customer Email": {
+                                        "description": "Customer Email",
+                                        "type": "email",
+                                        "example": "Customer Email"
+                                    },
+                                    "Invoice Product Lines": {
+                                        "description": "JSON data of product lines",
+                                        "type": "string",
+                                        "example": "{}"
+                                    },
+                                    "Total Price": {
+                                        "description": "Sum of all prices",
+                                        "type": "number",
+                                        "format": "double",
+                                        "example": "0.00"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Invoice created successfully"
+                    },
+                    "422": {
+                        "description": "Validation errors"
+                    }
+                }
+            }
+        },
+        "/api/invoices/{id}": {
+            "get": {
+                "tags": [
+                    "Invoices"
+                ],
+                "summary": "View Invoice Information",
+                "operationId": "53e4311d81b9d387cef639a96cff3bf1",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "Invoice ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Invoice Information"
+                    },
+                    "400": {
+                        "description": "Invoice was not found"
+                    }
+                }
+            }
+        },
+        "/api/invoice/send": {
+            "post": {
+                "tags": [
+                    "Invoices"
+                ],
+                "summary": "Send Invoice",
+                "operationId": "749cee3ff993d8f332e1c521cea9059f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Invoice ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Invoice has been sent successfully"
+                    },
+                    "400": {
+                        "description": "Sending error"
+                    },
+                    "422": {
+                        "description": "Validation errors"
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Invoices",
+            "description": "Invoice Management Endpoints"
+        }
+    ]
+}
