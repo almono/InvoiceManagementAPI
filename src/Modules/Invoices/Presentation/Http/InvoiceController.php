@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Modules\Invoices\Presentation\Http;
 
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 // Services
 use Modules\Invoices\Application\Services\InvoiceService;
@@ -14,6 +15,7 @@ use Modules\Invoices\Presentation\Http\Requests\CreateInvoiceRequest;
 
 // DTOs
 use Modules\Invoices\Api\Dtos\InvoiceDataDTO;
+
 
 /**
  * @OA\Info(title="Invoice Handler Controller", version="0.1", description="Invoice Swagger API")
@@ -69,7 +71,7 @@ final readonly class InvoiceController
     *             )
     *         )
     *     ),
-    *     @OA\Response(response="201", description="Invoice created successfully"),
+    *     @OA\Response(response="200", description="Invoice created successfully"),
     *     @OA\Response(response="422", description="Validation errors")
     * )
     */
@@ -77,9 +79,9 @@ final readonly class InvoiceController
     {
         try {
             $newInvoice = $this->invoiceService->createNewInvoice($request->validated());
-            return new JsonResponse(data: ['message' => $newInvoice], status: 201);
+            return new JsonResponse(data: ['message' => $newInvoice], status: Response::HTTP_OK);
         } catch (\Exception $e) {
-            return new JsonResponse(data: ['message' => $e->getMessage(), 'test' => $request->validated(), 'test2' => $request->all()], status: 422);
+            return new JsonResponse(data: ['message' => $e->getMessage(), 'validations' => $request->validated(), 'request_fields' => $request->all()], status: Response::HTTP_UNPROCESSABLE_ENTITY);
         }
     }
 
@@ -94,7 +96,7 @@ final readonly class InvoiceController
     *         description="Invoice ID",
     *         required=true
     *     ),
-    *     @OA\Response(response="201", description="Invoice Information"),
+    *     @OA\Response(response="200", description="Invoice Information"),
     *     @OA\Response(response="400", description="Invoice was not found")
     * )
     */
@@ -103,9 +105,9 @@ final readonly class InvoiceController
         $invoice = $this->invoiceService->getInvoiceWithProductLines($id);
 
         if(!$invoice) {
-            return new JsonResponse(data: ['message' => 'Invoice could not be found'], status: 400);
+            return new JsonResponse(data: ['message' => 'Invoice could not be found'], status: Response::HTTP_BAD_REQUEST);
         }
 
-        return new JsonResponse(data: $invoice, status: 201);
+        return new JsonResponse(data: $invoice, status: Response::HTTP_OK);
     }
 }
