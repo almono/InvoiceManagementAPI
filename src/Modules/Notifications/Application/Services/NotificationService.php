@@ -8,8 +8,8 @@ use Illuminate\Contracts\Events\Dispatcher;
 use Modules\Notifications\Api\Events\ResourceDeliveredEvent;
 use Ramsey\Uuid\Uuid;
 
-use Modules\Invoices\Models\Invoice;
-use Modules\Invoices\Models\InvoiceProductLine;
+use App\Models\Invoice;
+use App\Models\InvoiceProductLine;
 
 /**
  * @OA\Info(title="Invoice Handler API", version="0.1", description="Invoice Swagger API")

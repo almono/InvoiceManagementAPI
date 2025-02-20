@@ -34,8 +34,26 @@ final readonly class NotificationController
         return new JsonResponse(data: null, status: Response::HTTP_OK);
     }
 
-    public function send()
+    
+    /**
+    * @OA\Post(
+    *     path="/api/invoices/send",
+    *     summary="Send Invoice",
+    *     tags={"Notifications"},
+    *     @OA\Parameter(
+    *         name="id",
+    *         in="path",
+    *         description="Invoice ID",
+    *         required=true,
+    *         @OA\Schema(type="string")
+    *     ),
+    *     @OA\Response(response="201", description="Invoice has been sent successfully"),
+    *     @OA\Response(response="400", description="Sending error"),
+    *     @OA\Response(response="422", description="Validation errors")
+    * )
+    */
+    public function send(): JsonResponse
     {
-
+        return new JsonResponse(data: "test");
     }
 }

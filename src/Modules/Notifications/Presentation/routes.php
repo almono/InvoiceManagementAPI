@@ -10,7 +10,7 @@ Route::pattern('action', '^[a-zA-Z]+$');
 Route::pattern('reference', (new GenericValidator)->getPattern());
 
 Route::prefix('notifications')->group(function() {
-    //Route::post('/send', [NotificationController::class, 'send'])->name('notification.send');
+    Route::post('/send', [NotificationController::class, 'send'])->name('notification.send');
 });
 
 Route::get('/notification/hook/{action}/{reference}', [NotificationController::class, 'hook'])->name('notification.hook');

@@ -19,7 +19,7 @@
                         "multipart/form-data": {
                             "schema": {
                                 "properties": {
-                                    "Invoice Status": {
+                                    "status": {
                                         "description": "Status of the Invoice",
                                         "type": "string",
                                         "default": "draft",
@@ -30,26 +30,20 @@
                                         ],
                                         "example": "draft"
                                     },
-                                    "Customer Name": {
+                                    "customer_name": {
                                         "description": "Customer Name",
                                         "type": "string",
                                         "example": "Customer Name"
                                     },
-                                    "Customer Email": {
+                                    "customer_email": {
                                         "description": "Customer Email",
                                         "type": "email",
                                         "example": "Customer Email"
                                     },
-                                    "Invoice Product Lines": {
+                                    "product_lines": {
                                         "description": "JSON data of product lines",
                                         "type": "string",
                                         "example": "{}"
-                                    },
-                                    "Total Price": {
-                                        "description": "Sum of all prices",
-                                        "type": "number",
-                                        "format": "double",
-                                        "example": "0.00"
                                     }
                                 },
                                 "type": "object"
@@ -77,12 +71,9 @@
                 "parameters": [
                     {
                         "name": "id",
-                        "in": "query",
+                        "in": "path",
                         "description": "Invoice ID",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -95,13 +86,13 @@
                 }
             }
         },
-        "/api/invoice/send": {
+        "/api/invoices/send": {
             "post": {
                 "tags": [
-                    "Invoices"
+                    "Notifications"
                 ],
                 "summary": "Send Invoice",
-                "operationId": "749cee3ff993d8f332e1c521cea9059f",
+                "operationId": "fe05b0ca1dcaa736c4a7925ef8c873f2",
                 "parameters": [
                     {
                         "name": "id",
@@ -131,6 +122,10 @@
         {
             "name": "Invoices",
             "description": "Invoice Management Endpoints"
+        },
+        {
+            "name": "Notifications",
+            "description": "Notification Management Endpoints"
         }
     ]
 }

@@ -2,7 +2,8 @@
 
 namespace Modules\Invoices\Repositories;
 
-use Modules\Invoices\Models\Invoice;
+use App\Models\Invoice;
+use Modules\Invoices\Api\Dtos\InvoiceDataDTO;
 
 class InvoiceRepository
 {
@@ -11,13 +12,18 @@ class InvoiceRepository
         return Invoice::create($data);
     }
 
-    public function update(Invoice $invoice, array $data): bool
+    public function update(Invoice $invoice, array $data) : bool
     {
         return $invoice->update($data);
     }
 
-    public function find(int $id): ?Invoice
+    public function find(string $id): ?Invoice
     {
-        return Invoice::find($id);
+        return Invoice::where($id);
+    }
+
+    public function findWithProductLines(string $id) : ?Invoice
+    {
+        return Invoice::with('productLine')->find($id);
     }
 }

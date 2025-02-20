@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Modules\Invoices\Application\Services;
 
-use Modules\Repositories\Repositories\InvoiceRepository;
+use Modules\Invoices\Repositories\InvoiceRepository;
 
-use Modules\Invoices\Models\Invoice;
-use Modules\Invoices\Models\InvoiceProductLine;
+use App\Models\Invoice;
+use Modules\Invoices\Api\Dtos\InvoiceDataDTO;
 
 final readonly class InvoiceService
 {
@@ -15,13 +15,18 @@ final readonly class InvoiceService
         private InvoiceRepository $invoiceRepository
     ) {}
 
-    public function createNewInvoice($data) : Invoice
+    public function createNewInvoice(array $data) : Invoice
     {
         return $this->invoiceRepository->create($data);
     }
 
-    public function getInvoiceData($id)
+    public function getInvoiceData(string $id) : Invoice
     {
         return $this->invoiceRepository->find($id);
+    }
+
+    public function getInvoiceWithProductLines(string $id) : ?Invoice
+    {
+        return $this->invoiceRepository->findWithProductLines($id);
     }
 }

@@ -5,8 +5,15 @@ declare(strict_types=1);
 namespace Modules\Invoices\Presentation\Http;
 
 use Illuminate\Http\JsonResponse;
+
+// Services
 use Modules\Invoices\Application\Services\InvoiceService;
-use Symfony\Component\HttpFoundation\Response;
+
+// Requests
+use Modules\Invoices\Presentation\Http\Requests\CreateInvoiceRequest;
+
+// DTOs
+use Modules\Invoices\Api\Dtos\InvoiceDataDTO;
 
 /**
  * @OA\Info(title="Invoice Handler Controller", version="0.1", description="Invoice Swagger API")
@@ -34,7 +41,7 @@ final readonly class InvoiceController
     *             mediaType="multipart/form-data",
     *             @OA\Schema(
     *                 @OA\Property(
-    *                     property="Invoice Status",
+    *                     property="status",
     *                     type="string",
     *                     description="Status of the Invoice",
     *                     example="draft",
@@ -42,28 +49,22 @@ final readonly class InvoiceController
     *                     enum={"draft", "sending", "sent-to-client"}
     *                 ),
     *                 @OA\Property(
-    *                     property="Customer Name",
+    *                     property="customer_name",
     *                     type="string",
     *                     description="Customer Name",
     *                     example="Customer Name"
     *                 ),
     *                 @OA\Property(
-    *                     property="Customer Email",
+    *                     property="customer_email",
     *                     type="email",
     *                     description="Customer Email",
     *                     example="Customer Email"
     *                 ),
     *                 @OA\Property(
-    *                     property="Invoice Product Lines",
+    *                     property="product_lines",
     *                     type="string",
     *                     description="JSON data of product lines",
     *                     example="{}"
-    *                 ),
-    *                 @OA\Property(
-    *                     property="Total Price",
-    *                     type="double",
-    *                     description="Sum of all prices",
-    *                     example="0.00"
     *                 )
     *             )
     *         )
@@ -72,9 +73,14 @@ final readonly class InvoiceController
     *     @OA\Response(response="422", description="Validation errors")
     * )
     */
-    public function store(): JsonResponse
+    public function store(CreateInvoiceRequest $request): JsonResponse
     {
-        return new JsonResponse(data: "test");
+        try {
+            $newInvoice = $this->invoiceService->createNewInvoice($request->validated());
+            return new JsonResponse(data: ['message' => $newInvoice], status: 201);
+        } catch (\Exception $e) {
+            return new JsonResponse(data: ['message' => $e->getMessage(), 'test' => $request->validated(), 'test2' => $request->all()], status: 422);
+        }
     }
 
     /**
@@ -84,39 +90,22 @@ final readonly class InvoiceController
     *     tags={"Invoices"},
     *     @OA\Parameter(
     *         name="id",
-    *         in="query",
+    *         in="path",
     *         description="Invoice ID",
-    *         required=true,
-    *         @OA\Schema(type="string")
+    *         required=true
     *     ),
     *     @OA\Response(response="201", description="Invoice Information"),
     *     @OA\Response(response="400", description="Invoice was not found")
     * )
     */
-    public function show(): JsonResponse
+    public function show(string $id): JsonResponse
     {
-        return new JsonResponse(data: "test");
-    }
+        $invoice = $this->invoiceService->getInvoiceWithProductLines($id);
 
-    /**
-    * @OA\Post(
-    *     path="/api/invoice/send",
-    *     summary="Send Invoice",
-    *     tags={"Invoices"},
-    *     @OA\Parameter(
-    *         name="id",
-    *         in="path",
-    *         description="Invoice ID",
-    *         required=true,
-    *         @OA\Schema(type="string")
-    *     ),
-    *     @OA\Response(response="201", description="Invoice has been sent successfully"),
-    *     @OA\Response(response="400", description="Sending error"),
-    *     @OA\Response(response="422", description="Validation errors")
-    * )
-    */
-    public function send(): JsonResponse
-    {
-        return new JsonResponse(data: "test");
+        if(!$invoice) {
+            return new JsonResponse(data: ['message' => 'Invoice could not be found'], status: 400);
+        }
+
+        return new JsonResponse(data: $invoice, status: 201);
     }
 }
