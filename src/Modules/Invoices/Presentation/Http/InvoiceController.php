@@ -15,6 +15,7 @@ use Modules\Invoices\Presentation\Http\Requests\CreateInvoiceRequest;
 
 // DTOs
 use Modules\Invoices\Api\Dtos\InvoiceDataDTO;
+use App\Models\InvoiceProductLine;
 
 
 /**
@@ -60,13 +61,13 @@ final readonly class InvoiceController
     *                     property="customer_email",
     *                     type="email",
     *                     description="Customer Email",
-    *                     example="Customer Email"
+    *                     example="test@email.com"
     *                 ),
     *                 @OA\Property(
     *                     property="product_lines",
     *                     type="string",
     *                     description="JSON data of product lines",
-    *                     example="{}"
+    *                     example="[]"
     *                 )
     *             )
     *         )
@@ -74,6 +75,16 @@ final readonly class InvoiceController
     *     @OA\Response(response="200", description="Invoice created successfully"),
     *     @OA\Response(response="422", description="Validation errors")
     * )
+    */
+    /*
+    [
+    {
+        "name": "test",
+        "quantity": 100,
+        "price": 5,
+        "total_unit_price": 500
+    }
+]
     */
     public function store(CreateInvoiceRequest $request): JsonResponse
     {

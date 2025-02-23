@@ -6,8 +6,10 @@ namespace Tests\Unit\Notification\Services;
 
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Foundation\Testing\WithFaker;
+use Modules\Invoices\Repositories\InvoiceRepository;
 use Modules\Notifications\Api\Events\ResourceDeliveredEvent;
 use Modules\Notifications\Application\Services\NotificationService;
+use Modules\Notifications\Infrastructure\Drivers\DummyDriver;
 use PHPUnit\Framework\TestCase;
 
 final class NotificationServiceTest extends TestCase
@@ -17,13 +19,15 @@ final class NotificationServiceTest extends TestCase
     private Dispatcher $dispatcher;
 
     private NotificationService $notificationService;
+    private DummyDriver $driverInterface;
+    private InvoiceRepository $invoiceRepository;
 
     protected function setUp(): void
     {
         $this->setUpFaker();
 
         $this->dispatcher = $this->createMock(Dispatcher::class);
-        $this->notificationService = new NotificationService($this->dispatcher);
+        $this->notificationService = new NotificationService($this->dispatcher, $this->driverInterface, $this->invoiceRepository);
     }
 
     public function testDelivered(): void

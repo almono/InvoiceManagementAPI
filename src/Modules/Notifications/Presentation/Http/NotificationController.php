@@ -5,13 +5,10 @@ declare(strict_types=1);
 namespace Modules\Notifications\Presentation\Http;
 
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Modules\Invoices\Application\Services\InvoiceService;
 use Modules\Notifications\Application\Services\NotificationService;
 use Symfony\Component\HttpFoundation\Response;
-
-// DTOs
-use Modules\Notifications\Api\Dtos\NotifyData;
-use Modules\Notifications\Application\Facades\NotificationFacade;
 
 /**
  * @OA\Info(title="Notification Handler Controller", version="0.1", description="Invoice Swagger API")
@@ -52,7 +49,7 @@ final readonly class NotificationController
     *             mediaType="multipart/form-data",
     *             @OA\Schema(
     *                 @OA\Property(
-    *                     property="id",
+    *                     property="invoice_id",
     *                     type="string",
     *                     description="Invoice ID",
     *                     example="1234",
@@ -66,19 +63,12 @@ final readonly class NotificationController
     *     @OA\Response(response="422", description="Validation errors")
     * )
     */
-    public function send(string $id): JsonResponse
+    public function send(Request $request): JsonResponse
     {
-        $invoice = $this->invoiceService->getInvoiceData($id);
-
-        $emailData = new NotifyData(
-            resourceId: $invoice->id,
-            toEmail: $invoice->customer_email,
-            subject: 'Your Invoice Delivery Status',
-            message: 'The invoice ' . $invoice->id . ' has been sent to you'
-        );
-
-        // We can either make the method static or call it this way
-        app(NotificationFacade::class)->notify($emailData);
-        return new JsonResponse(data: "test");
+        //dd($request->input('invoice_id'));
+        $invoice = $this->invoiceService->getInvoiceData($request->input('invoice_id'));
+        $result = $this->notificationService->sendNotification($invoice);
+        
+        return new JsonResponse(data: $result);
     }
 }

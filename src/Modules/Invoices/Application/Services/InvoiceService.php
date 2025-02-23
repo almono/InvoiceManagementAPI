@@ -7,9 +7,7 @@ namespace Modules\Invoices\Application\Services;
 use Modules\Invoices\Repositories\InvoiceRepository;
 
 use App\Models\Invoice;
-use App\Models\InvoiceProductLine;
 use Illuminate\Support\Facades\DB;
-use Modules\Invoices\Api\Dtos\InvoiceDataDTO;
 use Illuminate\Support\Str;
 
 final readonly class InvoiceService
@@ -22,9 +20,10 @@ final readonly class InvoiceService
     {
         return DB::transaction(function () use ($data) {
             $invoice = $this->invoiceRepository->create($data);
-            $productLines = json_decode($data['product_lines'], true);
-
+            
             if (!empty($productLines)) {
+                $productLines = json_decode($data['product_lines'], true);
+                
                 foreach($productLines as $productLine)
                 {
                     $productLine['invoice_id'] = $invoice->id;

@@ -24,7 +24,7 @@ class InvoiceRepository
 
     public function find(string $id): ?Invoice
     {
-        return Invoice::where($id);
+        return Invoice::find($id);
     }
 
     public function findWithProductLines(string $id) : ?Invoice
