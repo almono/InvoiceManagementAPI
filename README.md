@@ -5,6 +5,7 @@
 * To access the container environment, use: `docker compose exec app bash`.
 
 I added Swagger UI for easier endpoint testing which can be found under http://localhost/api/documentation once the docker container is started.
+Right now there is no authentication added for requests but adding users table and a simple login to get a token is one of the potential enhancements that could be added.
 
 The Invoice and Notification logic has been split between two modules.
 
