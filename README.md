@@ -1,55 +1,25 @@
-## Invoice Structure:
-
-The invoice should contain the following fields:
-* **Invoice ID**: Auto-generated during creation.
-* **Invoice Status**: Possible states include `draft,` `sending,` and `sent-to-client`.
-* **Customer Name** 
-* **Customer Email** 
-* **Invoice Product Lines**, each with:
-  * **Product Name**
-  * **Quantity**: Integer, must be positive. 
-  * **Unit Price**: Integer, must be positive.
-  * **Total Unit Price**: Calculated as Quantity x Unit Price. 
-* **Total Price**: Sum of all Total Unit Prices.
-
-## Required Endpoints:
-
-1. **View Invoice**: Retrieve invoice data in the format above.
-2. **Create Invoice**: Initialize a new invoice.
-3. **Send Invoice**: Handle the sending of an invoice.
-
-## Functional Requirements:
-
-### Invoice Criteria:
-
-* An invoice can only be created in `draft` status. 
-* An invoice can be created with empty product lines. 
-* An invoice can only be sent if it is in `draft` status. 
-* An invoice can only be marked as `sent-to-client` if its current status is `sending`. 
-* To be sent, an invoice must contain product lines with both quantity and unit price as positive integers greater than **zero**.
-
-### Invoice Sending Workflow:
-
-* **Send an email notification** to the customer using the `NotificationFacade`. 
-  * The email's subject and message may be hardcoded or customized as needed. 
-  * Change the **Invoice Status** to `sending` after sending the notification.
-
-### Delivery:
-
-* Upon successful delivery by the Dummy notification provider:
-  * The **Notification Module** triggers a `ResourceDeliveredEvent` via webhook.
-  * The **Invoice Module** listens for and captures this event.
-  * The **Invoice Status** is updated from `sending` to `sent-to-client`.
-  * **Note**: This transition requires that the invoice is currently in the `sending` status.
-
-## Technical Requirements:
-
-* **Preferred Approach**: Domain-Driven Design (DDD) is preferred for this project. If you have experience with DDD, please feel free to apply this methodology. However, if you are more comfortable with another approach, you may choose an alternative structure.
-* **Alternative Submission**: If you have a different, comparable project or task that showcases your skills, you may submit that instead of creating this task.
-* **Unit Tests**: Core invoice logic should be unit tested. Testing the returned values from endpoints is not required.
-* **Documentation**: Candidates are encouraged to document their decisions and reasoning in comments or a README file, explaining why specific implementations or structures were chosen.
 
 ## Setup Instructions:
 
 * Start the project by running `./start.sh`.
 * To access the container environment, use: `docker compose exec app bash`.
+
+I added Swagger UI for easier endpoint testing which can be found under http://localhost/api/documentation once the docker container is started.
+
+The Invoice and Notification logic has been split between two modules.
+
+Invoice module is responsible for creating the invoice with given parameters, getting data on the stored invoices.
+
+CreateInvoiceRequest class has been implemented as a way to validate the sent payload. 
+It validates each field sent during invoice creation as well as product lines ( if they are present ) to make sure the values are set correctly.
+
+During Invoice generation if the product line json is valid we make sure the product lines have unique uuids which then can be attached to the main Invoice model.
+Because this process has more than one step I decided to use a transaction to confirm whether or not the creation of all objects ended successfully.
+
+When sending a request for Invoice information if the invoice exists and it contains product lines it should return it along with calculated sum of all the products.
+
+Sending notification ( Invoice ) is done in a Notification module where we confirm the Invoice status first, if it is correct then we create a notification data object with
+data used for the email that is sent right after. Once the email is sent the Invoice status is updated to "sending" and an event is being prepared to handle the delivery of that email,
+once the email is delivered the Invoice status is updated to "sent-to-client".
+
+For tests I decided to do a simple unit tests that check for valid and invalid invoice creation as well as checking the view endpoint.

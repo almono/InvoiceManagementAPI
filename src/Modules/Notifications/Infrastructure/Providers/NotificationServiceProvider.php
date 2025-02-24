@@ -15,6 +15,12 @@ use Modules\Notifications\Infrastructure\Drivers\DummyDriver;
 
 final class NotificationServiceProvider extends ServiceProvider implements DeferrableProvider
 {
+    protected $listen = [
+        ResourceDeliveredEvent::class => [
+            ResourceDeliveredListener::class,
+        ],
+    ];
+    
     public function register(): void
     {
         $this->app->scoped(NotificationFacadeInterface::class, NotificationFacade::class);

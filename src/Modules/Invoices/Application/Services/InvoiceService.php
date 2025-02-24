@@ -20,7 +20,8 @@ final readonly class InvoiceService
     {
         return DB::transaction(function () use ($data) {
             $invoice = $this->invoiceRepository->create($data);
-            
+            $productLines = $data['product_lines'];
+
             if (!empty($productLines)) {
                 $productLines = json_decode($data['product_lines'], true);
                 

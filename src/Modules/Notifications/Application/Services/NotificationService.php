@@ -36,7 +36,11 @@ final readonly class NotificationService
     public function sendNotification(Invoice $invoice) : string
     {
         if($invoice->status !== StatusEnum::Draft->value) {
-            //return "Can't send notification for the current Invoice status: {$invoice->status}";
+            return "Can't send notification for the current Invoice status: {$invoice->status}";
+        }
+
+        if(empty($invoice->productLine)) {
+            return "Can't send notification for Invoice with no product lines";
         }
 
         // Prepare and send notification for the invoice

@@ -65,7 +65,6 @@ final readonly class NotificationController
     */
     public function send(Request $request): JsonResponse
     {
-        //dd($request->input('invoice_id'));
         $invoice = $this->invoiceService->getInvoiceData($request->input('invoice_id'));
         $result = $this->notificationService->sendNotification($invoice);
         

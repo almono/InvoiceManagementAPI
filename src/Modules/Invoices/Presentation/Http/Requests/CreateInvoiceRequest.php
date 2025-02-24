@@ -4,6 +4,7 @@ namespace Modules\Invoices\Presentation\Http\Requests;
 
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Modules\Invoices\Domain\Enums\StatusEnum;
 
 class CreateInvoiceRequest extends FormRequest
@@ -23,18 +24,17 @@ class CreateInvoiceRequest extends FormRequest
         ]; 
     }
 
-    /*public function withValidator($validator)
+    public function withValidator($validator) : void
     {
         $validator->after(function ($validator) {
             $productLinesJson = $this->input('product_lines');
-
+            
             if (!empty($productLinesJson)) {
                 // confirm if the json string is formatted properly
                 if(!json_validate($productLinesJson)) {
                     $validator->errors()->add('product_lines', 'The product_lines field must be a valid JSON string');
                     return;
                 }
-
                 // confirm if the json has decoded properly
                 $productLines = json_decode($productLinesJson, true);
                 if (!is_array($productLines)) {
@@ -51,6 +51,10 @@ class CreateInvoiceRequest extends FormRequest
                     if (!isset($value['price']) || !is_numeric($value['price'])) {
                         $validator->errors()->add("product_lines[{$index}].price", 'Each product must have a valid price');
                     }
+
+                    if($value['total_unit_price'] != $value['price'] * $value['quantity']) {
+                        $validator->errors()->add("product_lines[{$index}].total_unit_price", 'Each product must have a valid total price');
+                    }
                 }
 
                 // sum all product lines
@@ -60,6 +64,16 @@ class CreateInvoiceRequest extends FormRequest
                     $validator->errors()->add('product_lines', 'The sum of all product value totals must be greater than 0');
                 }
             }
+
+            return;
         });
-    }*/
+    }
+
+    public function failedValidation($validator) : never
+    {
+        throw new HttpResponseException(response()->json([
+            'success' => false,
+            'errors' => $validator->errors(),
+        ], 422));
+    }
 }
