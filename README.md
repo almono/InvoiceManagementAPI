@@ -4,8 +4,7 @@
 * Start the project by running `./start.sh`.
 * To access the container environment, use: `docker compose exec app bash`.
 
-I added Swagger UI for easier endpoint testing which can be found under http://localhost/api/documentation once the docker container is started.
-Right now there is no authentication added for requests but adding users table and a simple login to get a token is one of the potential enhancements that could be added.
+Swagger UI can be found under http://localhost/api/documentation once the docker container is started.
 
 The Invoice and Notification logic has been split between two modules.
 
@@ -22,5 +21,3 @@ When sending a request for Invoice information if the invoice exists and it cont
 Sending notification ( Invoice ) is done in a Notification module where we confirm the Invoice status first, if it is correct then we create a notification data object with
 data used for the email that is sent right after. Once the email is sent the Invoice status is updated to "sending" and an event is being prepared to handle the delivery of that email,
 once the email is delivered the Invoice status is updated to "sent-to-client".
-
-For tests I decided to do a simple unit tests that check for valid and invalid invoice creation as well as checking the view endpoint.
